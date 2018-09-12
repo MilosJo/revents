@@ -82,8 +82,8 @@ body {
 .main.segment {
   margin-top: 7em;
 }
-.ui.segment:not(:last-child) {
-  margin-bottom: 1rem;
+.ui.segments {
+  margin-bottom: 1rem !important;
 }
 
 .ui.center.aligned.segment.attendance-preview {
