@@ -11,6 +11,9 @@ const DateInput = ({
   meta: { touched, error },
   ...rest
 }) => {
+  if(value) {
+    value = moment(value, 'X');
+  }
   return (
     <Form.Field error={touched && !!error} width={width}>
       <DatePicker
