@@ -41,6 +41,7 @@ const SettingsDashboard = ({
             path="/settings/about"
             render={() => (
               <AboutPage
+                initialValues={user}
                 updateProfile={updateProfile}
                 providerId={providerId}
               />

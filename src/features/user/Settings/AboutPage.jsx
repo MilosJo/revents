@@ -13,6 +13,7 @@ const interests = [
   { key: "film", text: "Film", value: "film" },
   { key: "food", text: "Food", value: "food" },
   { key: "music", text: "Music", value: "music" },
+  { key: "programming", text: "Programming", value: "programming" },
   { key: "travel", text: "Travel", value: "travel" }
 ];
 
@@ -49,6 +50,7 @@ const AboutPage = ({ pristine, submitting, handleSubmit, updateProfile }) => {
         <Divider />
         <label>Tell us about yourself</label>
         <Field name="about" component={TextArea} placeholder="About Me" />
+        <label>Your Interests:</label>
         <Field
           name="interests"
           component={SelectInput}
@@ -57,6 +59,7 @@ const AboutPage = ({ pristine, submitting, handleSubmit, updateProfile }) => {
           multiple={true}
           placeholder="Select your interests"
         />
+        <label>Occupation:</label>
         <Field
           width={8}
           name="occupation"
