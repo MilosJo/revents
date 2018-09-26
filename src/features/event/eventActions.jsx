@@ -8,13 +8,7 @@ import {
 import { fetchSampleData } from "../../app/data/mockApi";
 import { createNewEvent } from "../../app/common/util/helpers";
 import moment from "moment";
-
-export const fetchEvents = events => {
-  return {
-    type: FETCH_EVENTS,
-    payload: events
-  };
-};
+import firebase from "../../app/config/firebase";
 
 export const createEvent = event => {
   return async (dispatch, getState, { getFirestore }) => {
@@ -24,7 +18,7 @@ export const createEvent = event => {
     let newEvent = createNewEvent(user, photoURL, event);
     try {
       let createdEvent = await firestore.add(`events`, newEvent);
-      await firestore.set(`events_attendee/${createdEvent.id}_${user.uid}`, {
+      await firestore.set(`event_attendee/${createdEvent.id}_${user.uid}`, {
         eventId: createdEvent.id,
         userUid: user.uid,
         eventDate: event.date,
@@ -71,24 +65,54 @@ export const cancelToggle = (cancelled, eventId) => {
   };
 };
 
-export const deleteEvent = eventId => {
-  return {
-    type: DELETE_EVENT,
-    payload: {
-      eventId
-    }
-  };
-};
+export const getEventsForDashboard = lastEvent => {
+  return async (dispatch, getState) => {
+    let today = new Date(Date.now());
+    const firestore = firebase.firestore();
+    const eventsRef = firestore.collection("events");
 
-export const loadEvents = () => {
-  return async dispatch => {
     try {
       dispatch(asyncActionStart());
-      let events = await fetchSampleData();
-      dispatch(fetchEvents(events));
+      let startAfter =
+        lastEvent &&
+        (await firestore
+          .collection("events")
+          .doc(lastEvent.id)
+          .get());
+
+      let query;
+
+      lastEvent
+        ? (query = eventsRef
+            .where("date", ">=", today)
+            .orderBy("date")
+            .startAfter(startAfter)
+            .limit(2))
+        : (query = eventsRef
+            .where("date", ">=", today)
+            .orderBy("date")
+            .limit(2));
+
+      let querySnap = await query.get();
+
+      if (querySnap.docs.length === 0) {
+        dispatch(asyncActionFinish());
+        return querySnap;
+      }
+
+      let events = [];
+
+      for (let i = 0; i < querySnap.docs.length; i++) {
+        let event = { ...querySnap.docs[i].data(), id: querySnap.docs[i].id };
+        events.push(event);
+      }
+
+      dispatch({ type: FETCH_EVENTS, payload: { events } });
       dispatch(asyncActionFinish());
+      return querySnap;
+
     } catch (error) {
-      console.log(error);
+      console.error(error);
       dispatch(asyncActionError());
     }
   };
