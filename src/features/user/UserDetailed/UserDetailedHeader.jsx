@@ -9,18 +9,24 @@ const UserDetailedHeader = ({ profile }) => {
       <Segment>
         <Item.Group>
           <Item>
-            <Item.Image avatar size="small" src={profile.photoURL || '/assets/user.png'} />
+            <Item.Image
+              avatar
+              size="small"
+              src={profile.photoURL || "/assets/user.png"}
+            />
             <Item.Content verticalAlign="bottom">
               <Header as="h1">{profile.displayName}</Header>
               <br />
               <Header as="h3">{profile.occupation}</Header>
               <br />
-              {profile.dateOfBirth && (
-                <Header as="h3">
-                  {differenceInYears(moment(), profile.dateOfBirth.toDate())},{" "}
-                  Lives in {profile.city}, {profile.origin}
-                </Header>
-              )}
+              <Header as="h3">
+                {profile.dateOfBirth
+                  ? differenceInYears(moment(), profile.dateOfBirth.toDate())
+                  : "Unknown age"}
+                {", "}
+                Lives in {profile.city || "Unknown city"},{" "}
+                {profile.origin || "from Unknown place"}
+              </Header>
             </Item.Content>
           </Item>
         </Item.Group>

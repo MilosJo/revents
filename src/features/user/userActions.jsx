@@ -1,7 +1,11 @@
 import moment from "moment";
 import cuid from "cuid";
 import { toastr } from "react-redux-toastr";
-import { asyncActionStart, asyncActionFinish, asyncActionError } from '../async/asyncActions'
+import {
+  asyncActionStart,
+  asyncActionFinish,
+  asyncActionError
+} from "../async/asyncActions";
 
 export const updateProfile = user => {
   return async (dispatch, getState, { getFirebase }) => {
@@ -32,7 +36,7 @@ export const updateProfileImage = (file, fileName) => {
       name: imageName
     };
     try {
-      dispatch(asyncActionStart())
+      dispatch(asyncActionStart());
       // Upload the file to firebase storage
       let uploadedFile = await firebase.uploadFile(path, file, null, options);
       // Get url of image
@@ -61,11 +65,11 @@ export const updateProfileImage = (file, fileName) => {
           name: imageName,
           url: downloadURL
         }
-      )
-      dispatch(asyncActionFinish())
+      );
+      dispatch(asyncActionFinish());
     } catch (error) {
       console.log(error);
-      dispatch(asyncActionError())
+      dispatch(asyncActionError());
       throw new Error("Problem uploading photo");
     }
   };
@@ -100,6 +104,53 @@ export const setMainPhoto = photo => {
     } catch (error) {
       console.log(error);
       throw new Error("Problem changing them main photo");
+    }
+  };
+};
+
+export const goingToEvent = event => {
+  return async (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const user = firestore.auth().currentUser;
+    const photoURL = getState().firebase.profile.photoURL;
+    const attendee = {
+      going: true,
+      photoURL: photoURL || '/assets/user.png',
+      displayName: user.displayName,
+      host: false,
+      joinDate: Date.now()
+    };
+    try {
+      await firestore.update(`events/${event.id}`, {
+        [`attendees.${user.uid}`]: attendee
+      });
+      await firestore.set(`events_attendee/${event.id}_${user.id}`, {
+        eventDate: event.date,
+        eventId: event.id,
+        host: false,
+        userUid: user.uid
+      });
+      toastr.success('Success', 'You are going to this event')
+    } catch (error) {
+      console.error(error);
+      toastr.error("Oops", "Problem signing up to the event");
+    }
+  };
+};
+
+export const cancelGoingToEvent = event => {
+  return async (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const user = firestore.auth().currentUser;
+    try {
+      await firestore.update(`events/${event.id}`, {
+        [`attendees.${user.uid}`]: firestore.FieldValue.delete()
+      });
+      await firestore.delete(`event_attendee/${event.id}_${user.uid}`);
+      toastr.success("Success", "You have successfuly removed yourself from this event");
+    } catch (error) {
+      console.error(error);
+      toastr.error("Oops", "Something went wrong");
     }
   };
 };
