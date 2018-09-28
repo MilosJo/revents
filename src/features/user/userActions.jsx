@@ -116,6 +116,7 @@ export const goingToEvent = event => {
     const user = firestore.auth().currentUser;
     const photoURL = getState().firebase.profile.photoURL;
     const attendee = {
+      uid: user.uid,
       going: true,
       photoURL: photoURL || "/assets/user.png",
       displayName: user.displayName,

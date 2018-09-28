@@ -21,7 +21,7 @@ const UserDetailedHeader = ({ profile }) => {
               <br />
               <Header as="h3">
                 {profile.dateOfBirth
-                  ? differenceInYears(moment(), profile.dateOfBirth.toDate())
+                  ? differenceInYears(moment(), moment(profile.dateOfBirth).toDate())
                   : "Unknown age"}
                 {", "}
                 Lives in {profile.city || "Unknown city"},{" "}

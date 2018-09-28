@@ -1,95 +1,73 @@
-import React from "react";
-import { Segment, Header, Comment, Form, Button } from "semantic-ui-react";
+import React, { Component } from "react";
+import { Segment, Header, Comment } from "semantic-ui-react";
+import EventDetailedChatForm from "./EventDetailedChatForm";
+import distanceInWordsToNow from "date-fns/distance_in_words_to_now";
+import { Link } from "react-router-dom";
+import Loop from "../../../app/common/util/Loop";
+import { createDataTree } from "../../../app/common/util/helpers";
+import EventDetailedCommentWithChildren from './EventDetailedCommentWithChildren';
+ 
+class EventDetailedChat extends Component {
+  state = {
+    showReplyForm: false,
+    selectedCommentId: null
+  };
 
-const EventDetailedChat = () => {
-  return (
-    <div>
-      <Segment
-        textAlign="center"
-        attached="top"
-        inverted
-        color="teal"
-        style={{ border: "none" }}
-      >
-        <Header>Chat about this event</Header>
-      </Segment>
+  handleOpenReplyForm = id => () => {
+    this.setState({
+      showReplyForm: true,
+      selectedCommentId: id
+    });
+  };
 
-      <Segment attached>
-        <Comment.Group>
-          <Comment>
-            <Comment.Avatar src="/assets/user.png" />
-            <Comment.Content>
-              <Comment.Author as="a">Matt</Comment.Author>
-              <Comment.Metadata>
-                <div>Today at 5:42PM</div>
-              </Comment.Metadata>
-              <Comment.Text>How artistic!</Comment.Text>
-              <Comment.Actions>
-                <Comment.Action>Reply</Comment.Action>
-              </Comment.Actions>
-            </Comment.Content>
-          </Comment>
+  handleCloseReplyForm = () => {
+    this.setState({
+      showReplyForm: false,
+      selectedCommentId: null
+    });
+  };
 
-          <Comment>
-            <Comment.Avatar src="/assets/user.png" />
-            <Comment.Content>
-              <Comment.Author as="a">Elliot Fu</Comment.Author>
-              <Comment.Metadata>
-                <div>Yesterday at 12:30AM</div>
-              </Comment.Metadata>
-              <Comment.Text>
-                <p>
-                  This has been very useful for my research. Thanks as well!
-                </p>
-              </Comment.Text>
-              <Comment.Actions>
-                <Comment.Action>Reply</Comment.Action>
-              </Comment.Actions>
-            </Comment.Content>
-            <Comment.Group>
-              <Comment>
-                <Comment.Avatar src="/assets/user.png" />
-                <Comment.Content>
-                  <Comment.Author as="a">Jenny Hess</Comment.Author>
-                  <Comment.Metadata>
-                    <div>Just now</div>
-                  </Comment.Metadata>
-                  <Comment.Text>Elliot you are always so right :)</Comment.Text>
-                  <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
-                  </Comment.Actions>
-                </Comment.Content>
-              </Comment>
-            </Comment.Group>
-          </Comment>
-
-          <Comment>
-            <Comment.Avatar src="/assets/user.png" />
-            <Comment.Content>
-              <Comment.Author as="a">Joe Henderson</Comment.Author>
-              <Comment.Metadata>
-                <div>5 days ago</div>
-              </Comment.Metadata>
-              <Comment.Text>Dude, this is awesome. Thanks so much</Comment.Text>
-              <Comment.Actions>
-                <Comment.Action>Reply</Comment.Action>
-              </Comment.Actions>
-            </Comment.Content>
-          </Comment>
-
-          <Form reply>
-            <Form.TextArea />
-            <Button
-              content="Add Reply"
-              labelPosition="left"
-              icon="edit"
-              primary
-            />
-          </Form>
-        </Comment.Group>
-      </Segment>
-    </div>
-  );
-};
+  render() {
+    const { addEventComment, eventId, eventChat } = this.props;
+    const { showReplyForm, selectedCommentId } = this.state;
+    console.log(eventChat ? createDataTree(eventChat) : null);
+    return (
+      <div>
+        <Segment
+          textAlign="center"
+          attached="top"
+          inverted
+          color="teal"
+          style={{ border: "none" }}
+        >
+          <Header>Chat about this event</Header>
+        </Segment>
+        <Segment attached>
+          <Comment.Group>
+            {eventChat &&
+              createDataTree(eventChat).map(comment => (
+                <EventDetailedCommentWithChildren 
+                  key={comment.id}
+                  comment={comment} 
+                  showReplyForm={showReplyForm} 
+                  selectedCommentId={selectedCommentId}
+                  addEventComment={addEventComment}
+                  eventId={eventId} 
+                  handleOpenReplyForm={this.handleOpenReplyForm}
+                  handleCloseReplyForm={this.handleCloseReplyForm}
+                />
+              ))}
+          </Comment.Group>
+          <EventDetailedChatForm
+            addEventComment={addEventComment}
+            eventId={eventId}
+            form={"newComment"}
+            parentId={0}
+          />
+        </Segment>
+      </div>
+    );
+  }
+}
 
 export default EventDetailedChat;

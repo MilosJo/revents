@@ -117,3 +117,25 @@ export const getEventsForDashboard = lastEvent => {
     }
   };
 };
+
+export const addEventComment = (eventId, values, parentId) => {
+  return async (dispatch, getState, {getFirebase}) => {
+    const firebase = getFirebase();
+    const profile = getState().firebase.profile;
+    const user = firebase.auth().currentUser;
+    let newComment = {
+      parentId: parentId,
+      displayName: profile.displayName,
+      uid: user.uid,
+      text: values.comment,
+      photoURL: profile.photoURL || '/assets/user.png',
+      date: Date.now()
+    } 
+    try {
+      await firebase.push(`event_chat/${eventId}`, newComment)
+    } catch(error) {
+      console.error(error);
+      toastr.error('Oops', 'Message was not sent')
+    }
+  }
+}

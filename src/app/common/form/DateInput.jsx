@@ -22,6 +22,8 @@ const DateInput = ({
         selected={value ? moment(value) : null}
         onChange={onChange}
         {...restInput}
+        showYearDropdown={true}
+        showMonthDropdow={true}
       />
       {touched &&
         error && (
