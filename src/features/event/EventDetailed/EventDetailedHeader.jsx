@@ -59,6 +59,10 @@ const EventDetailedHeader = ({ event, isGoing, isHost, goingToEvent, cancelGoing
             )}
           </div>
         )}
+        {console.log(isHost, 'isHost')}
+        {console.log(event.hostUid, 'event.hostUid')}
+        {console.log(event, 'event')}
+        {console.log(isHost === event.hostUid ? 'yes' : 'no')}
         {isHost && (
           <Button
             as={Link}

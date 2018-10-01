@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { Segment, Header, Comment } from "semantic-ui-react";
 import EventDetailedChatForm from "./EventDetailedChatForm";
-import distanceInWordsToNow from "date-fns/distance_in_words_to_now";
-import { Link } from "react-router-dom";
-import Loop from "../../../app/common/util/Loop";
 import { createDataTree } from "../../../app/common/util/helpers";
 import EventDetailedCommentWithChildren from './EventDetailedCommentWithChildren';
  
@@ -30,7 +27,6 @@ class EventDetailedChat extends Component {
   render() {
     const { addEventComment, eventId, eventChat } = this.props;
     const { showReplyForm, selectedCommentId } = this.state;
-    console.log(eventChat ? createDataTree(eventChat) : null);
     return (
       <div>
         <Segment

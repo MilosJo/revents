@@ -54,7 +54,7 @@ class EventDetailedPage extends Component {
     } = this.props;
     const attendees =
       event && event.attendees && objectToArray(event.attendees);
-    const isHost = event.hostUid === auth.id;
+    const isHost = event.hostUid === auth.uid;
     const isGoing = attendees && attendees.some(a => a.id === auth.uid);
     return (
       <Grid>

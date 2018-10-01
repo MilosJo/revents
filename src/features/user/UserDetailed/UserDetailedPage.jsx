@@ -43,7 +43,7 @@ const actions = {
 class UserDetailedPage extends Component {
   
   async componentDidMount() {
-    let events = await this.props.getUserEvents(this.props.userUid);
+    // let events = await this.props.getUserEvents(this.props.userUid);
   }
 
   changeTab = (e, data) => {
